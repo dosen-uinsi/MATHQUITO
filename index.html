@@ -220,7 +220,6 @@
       <div class="form-group">
         <label class="title">⏱️ Durasi Waktu Awal:</label>
         <select id="time-select">
-          <!-- Opsi 10 Detik Ditambahkan di Sini -->
           <option value="10">10 Detik (Sesi Kilat)</option>
           <option value="30">30 Detik (Sesi Cepat)</option>
           <option value="60" selected>60 Detik (Sesi Sedang)</option>
@@ -235,7 +234,6 @@
   </div>
 
   <!-- ================= INFO SCREEN (TAHUKAH KAMU) ================= -->
-  <!-- Modifikasi agar layar penuh, background hitam transparan, dan gambar proporsional -->
   <div id="info-screen" class="overlay hidden" style="background: rgba(0,0,0,0.9); z-index: 200; padding: 0;">
     <button id="close-info-btn" style="position: absolute; top: 15px; right: 15px; font-size: 2.5rem; background: #FF4757; color: white; border: 3px solid white; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 201; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">&times;</button>
     <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/INFOGRAFIK%20NYAMUK.jpg" alt="Infografik Nyamuk" style="width: 100vw; height: 100vh; object-fit: contain;" />
@@ -482,7 +480,6 @@
       uiStart.classList.remove('hidden');
     });
 
-    // --- EVENT LISTENER TAHUKAH KAMU ---
     document.getElementById('info-btn').addEventListener('click', () => {
       uiInfo.classList.remove('hidden');
     });
@@ -492,11 +489,8 @@
     });
 
     function startGame() {
-      // BERSIHKAN SEMUA INTERVAL DULU AGAR TIDAK ERROR / BERTUMPUK SAAT RESTART
       clearInterval(mainTimerInterval);
       clearInterval(mathTimerInterval);
-      
-      // PASTIKAN ANIMASI GSAP TIDAK DALAM KONDISI PAUSED
       gsap.globalTimeline.play();
 
       gameMode = document.getElementById('mode-select').value;
@@ -566,7 +560,6 @@
       clearInterval(mainTimerInterval);
       clearInterval(mathTimerInterval);
       
-      // Hentikan fungsi kemunculan nyamuk dengan tuntas
       if (spawnTimeout) spawnTimeout.kill();
       
       bgMusic.pause();
@@ -586,7 +579,7 @@
     // ==========================================
     function triggerMathQuestion() {
       isPlaying = false; 
-      gsap.globalTimeline.pause(); // Animasi di-pause
+      gsap.globalTimeline.pause(); 
       gsap.set(swatterContainer, { visibility: 'hidden' });
       document.body.classList.remove('playing');
 
@@ -624,7 +617,7 @@
         if(mathTimeRemaining <= 0) {
           clearInterval(mathTimerInterval);
           playSound(sounds.wrong);
-          triggerGameOver("Terlalu Lambat! Kamu kehabisan waktu."); // Timeout saat menjawab soal
+          triggerGameOver("Terlalu Lambat! Kamu kehabisan waktu."); 
         }
       }, 1000);
     }
@@ -643,7 +636,7 @@
         document.body.classList.add('playing');
         gsap.set(swatterContainer, { visibility: 'visible' });
         
-        gsap.globalTimeline.play(); // Lanjutkan Animasi
+        gsap.globalTimeline.play(); 
         isPlaying = true;
         
         mainTimerInterval = setInterval(updateMainTimer, 1000);
@@ -654,7 +647,7 @@
     }
 
     // ==========================================
-    // MEKANIK KONTROL PEMAIN & MUSUH
+    // MEKANIK KONTROL PEMAIN & MUSUH (PERBAIKAN HP)
     // ==========================================
     window.addEventListener('mousemove', onMove);
     window.addEventListener('touchmove', onMove, { passive: false });
@@ -671,13 +664,19 @@
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
-      gsap.to(swatterContainer, { duration: 0.05, x: point.pageX, y: point.pageY, ease: "power1.out" });
+      // Mengubah pageX/Y menjadi clientX/Y agar konsisten dengan element position: fixed;
+      gsap.to(swatterContainer, { duration: 0.05, x: point.clientX, y: point.clientY, ease: "power1.out" });
     }
 
     function swat(e) {
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
+      
+      // PERBAIKAN: Set posisi visual raket SECARA INSTAN ke titik sentuh (tap) di layar HP
+      // sebelum menjalankan animasi pukulan, sehingga tidak telat atau salah tempat.
+      gsap.set(swatterContainer, { x: point.clientX, y: point.clientY });
+
       gsap.to('.swatter', { duration: 0.05, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
       const isHitSuccess = checkPoint(point.clientX, point.clientY);
       if (isHitSuccess) playSound(sounds.hitSplat);
@@ -742,7 +741,6 @@
     }
 
     function emitGnats() {
-      // TAMBAHAN KEAMANAN: Cegah pemanggilan berulang saat game over (Mencegah Lag/Bug Restart)
       if (!isPlaying) return; 
       
       if (uiGameOver.classList.contains('hidden') && isPlaying) {
