@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gnat Attack - Professional Edutainment</title>
+  <title>MATHQUITO - Math & Action Edutainment</title>
 
   <!-- Menggunakan Font Playful/Kasual standar Game -->
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
       font-size: 1vw; overflow: hidden;
       background-color: #efefef;
       -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: none;
-      font-family: 'Fredoka', sans-serif; /* Menerapkan Font Baru */
+      font-family: 'Fredoka', sans-serif;
     }
     body.playing { cursor: none; }
 
@@ -24,7 +24,7 @@
     .overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px); /* Efek blur modern pada background */
+      backdrop-filter: blur(8px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 100; text-align: center;
     }
@@ -34,13 +34,21 @@
       background: #ffffff; padding: 40px; border-radius: 24px;
       max-width: 500px; width: 90%; color: #333;
       border: 4px solid #e0e0e0;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1; /* Efek 3D pada Panel */
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1;
       transform: translateY(-5px);
     }
     
-    h1 { margin-top: 0; color: #8B9B0F; font-size: 3.5rem; text-shadow: 2px 2px 0px #e6f0a3; margin-bottom: 5px; line-height: 1.1; }
+    /* PENGATURAN LOGO MENU UTAMA */
+    .main-logo {
+      max-width: 90%;
+      height: auto;
+      max-height: 250px;
+      margin: 0 auto 20px auto;
+      display: block;
+      filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
+    }
+
     h2 { margin-top: 0; font-size: 2rem; color: #333; }
-    .subtitle { color: #888; font-size: 1.2rem; margin-bottom: 25px; font-weight: 600; }
 
     /* =========================================
        START SCREEN FORM & CHECKBOXES
@@ -48,7 +56,6 @@
     .form-group { margin-bottom: 20px; text-align: left; }
     .form-group label.title { font-weight: 700; display: block; margin-bottom: 12px; font-size: 1.2rem; color: #555; }
     
-    /* Desain Checkbox 3D */
     .checkbox-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .checkbox-btn { display: block; position: relative; cursor: pointer; user-select: none; }
     .checkbox-btn input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
@@ -59,15 +66,12 @@
       box-shadow: 0 4px 0 #ccc; transition: all 0.1s;
     }
     .checkbox-btn:hover input ~ .checkmark { filter: brightness(0.95); }
-    /* Saat Dicentang */
     .checkbox-btn input:checked ~ .checkmark {
       background-color: #4699D4; border-color: #2b70a0; color: white;
       box-shadow: 0 4px 0 #2b70a0; transform: translateY(-2px);
     }
-    /* Saat Ditekan */
     .checkbox-btn:active input ~ .checkmark { transform: translateY(4px); box-shadow: 0 0 0 #2b70a0; }
 
-    /* Desain Dropdown Select */
     select { 
       width: 100%; padding: 12px 15px; font-size: 1.2rem; font-weight: 600; font-family: inherit;
       border-radius: 12px; border: 3px solid #ccc; background-color: #f9f9f9;
@@ -77,7 +81,6 @@
     }
     select:active { transform: translateY(4px); box-shadow: 0 0 0 #ccc; }
 
-    /* Tombol Aksi Utama (Play/Restart) */
     .action-btn {
       padding: 16px 40px; font-size: 1.8rem; cursor: pointer; border: 3px solid #6B7B00;
       border-radius: 16px; background: #8B9B0F; color: white; font-weight: 700; font-family: inherit;
@@ -118,11 +121,34 @@
       position: fixed; top: 20px; left: 20px; right: 20px; z-index: 20; pointer-events: none;
       display: flex; justify-content: space-between; align-items: flex-start;
     }
+    
+    /* LOGO HUD TERKUNCI DI TENGAH (ABSOLUTE POSITIONING) */
+    .hud-logo {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 180px; 
+      filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)); 
+      pointer-events: none; 
+    }
+
+    /* KOTAK BADGE UKURAN TETAP */
     .badge {
-      display: flex; align-items: center; gap: 10px; font-family: inherit; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 700;
       padding: 10px 24px; border-radius: 50px; font-size: 2rem; border: 4px solid white;
       box-shadow: 0 6px 15px rgba(0,0,0,0.2), 0 4px 0 rgba(0,0,0,0.1);
+      min-width: 170px; 
+      box-sizing: border-box;
+      pointer-events: none;
     }
+    
+    #score-text, #time-text {
+      display: inline-block;
+      min-width: 45px; 
+      text-align: center;
+    }
+
     .score-badge { background: #FFA502; color: white; text-shadow: 1px 1px 0 #E67E22; }
     .time-badge { background: #FF4757; color: white; text-shadow: 1px 1px 0 #C0392B; }
     .badge-icon { font-size: 2.2rem; filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.2)); }
@@ -140,8 +166,8 @@
   <!-- ================= START SCREEN ================= -->
   <div id="start-screen" class="overlay">
     <div class="panel">
-      <h1>Gnat Attack</h1>
-      <div class="subtitle">Math & Action Edutainment</div>
+      <!-- LOGO MATHQUITO BESAR -->
+      <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" />
       
       <div class="form-group">
         <label class="title">🕹️ Mode Permainan:</label>
@@ -175,7 +201,7 @@
   <div id="math-screen" class="overlay hidden">
     <div class="panel" style="max-width: 600px;">
       <h2 style="color: #FF4757; margin-bottom: 5px;">Waktu Habis!</h2>
-      <div class="subtitle" style="color: #555;">Jawab cepat untuk dapat tambahan +10 Detik</div>
+      <div style="color: #888; font-size: 1.2rem; margin-bottom: 25px; font-weight: 600;">Jawab cepat untuk dapat tambahan +10 Detik</div>
       
       <div id="math-timer-bar"><div id="math-timer-fill"></div></div>
       
@@ -192,7 +218,10 @@
   <!-- ================= GAME OVER SCREEN ================= -->
   <div id="game-over-screen" class="overlay hidden">
     <div class="panel">
-      <h1 style="color: #FF4757;">GAME OVER</h1>
+      <!-- Logo di Game Over Diperbesar -->
+      <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" style="max-height: 150px;" />
+      
+      <h1 style="color: #FF4757; font-size: 2.5rem; text-shadow: none;">GAME OVER</h1>
       <h2 style="margin: 20px 0;">Nyamuk Terpukul:<br><span id="final-score" style="color: #FFA502; font-size: 5rem; text-shadow: 2px 2px 0 #E67E22;">0</span></h2>
       <p id="game-over-msg" style="font-size: 1.4rem; font-weight: 600; color: #555; background: #f0f0f0; padding: 10px; border-radius: 10px;"></p>
       <button id="restart-btn" class="action-btn" style="background: #1E90FF; border-color: #0277BD; box-shadow: 0 6px 0 #0277BD;">MAIN LAGI</button>
@@ -204,8 +233,12 @@
     <div class="badge score-badge">
       <span class="badge-icon">🦟</span> <span id="score-text">0</span>
     </div>
+    
+    <!-- LOGO MUNCUL DI TENGAH ATAS SAAT BERMAIN (TERKUNCI DI TENGAH) -->
+    <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="hud-logo" />
+    
     <div class="badge time-badge" id="time-badge-container">
-      <span class="badge-icon">⏱️</span> <span id="time-text">60</span>s
+      <span class="badge-icon">⏱️</span> <span id="time-text">60</span><span style="font-size: 1.5rem; margin-left:2px;">s</span>
     </div>
   </div>
 
@@ -356,6 +389,7 @@
     let isPlaying = false;
     let gnats = [];
     const swatThreshold = 60; 
+    let spawnTimeout;
     
     let swatCount = 0;
     let gameTime = 0;
@@ -413,11 +447,15 @@
         }
       }
 
+      if (spawnTimeout) {
+        spawnTimeout.kill();
+      }
+
       swatCount = 0;
       mathQuestionsAsked = 0;
       scoreText.innerText = swatCount;
       timeText.innerText = gameTime;
-      timeBadge.style.background = '#FF4757'; // Reset warna merah normal
+      timeBadge.style.background = '#FF4757'; 
       
       gnats.forEach(g => removeGnat(g));
       gnats = [];
@@ -445,9 +483,8 @@
       gameTime--;
       timeText.innerText = gameTime;
 
-      // Efek visual jika waktu kurang dari 5 detik
       if(gameTime <= 5 && gameTime > 0) {
-        timeBadge.style.background = (gameTime % 2 === 0) ? '#ff9f43' : '#FF4757'; // Berkedip
+        timeBadge.style.background = (gameTime % 2 === 0) ? '#ff9f43' : '#FF4757'; 
       }
 
       if (gameTime <= 0) {
@@ -533,7 +570,7 @@
         playSound(sounds.correct);
         gameTime += 10; 
         timeText.innerText = gameTime;
-        timeBadge.style.background = '#2ED573'; // Warna hijau saat dapat bonus waktu
+        timeBadge.style.background = '#2ED573';
         setTimeout(() => { timeBadge.style.background = '#FF4757'; }, 1000);
         
         document.body.classList.add('playing');
@@ -640,7 +677,7 @@
       if (uiGameOver.classList.contains('hidden') && isPlaying) {
         createGnats(Math.floor(Math.random() * 2) + 3);
       }
-      gsap.delayedCall(Math.random() + 2, emitGnats);
+      spawnTimeout = gsap.delayedCall(Math.random() + 2, emitGnats);
     }
 
     function checkPoint(x, y) {
