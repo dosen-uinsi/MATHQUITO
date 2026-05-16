@@ -220,6 +220,8 @@
       <div class="form-group">
         <label class="title">⏱️ Durasi Waktu Awal:</label>
         <select id="time-select">
+          <!-- Opsi 10 Detik Ditambahkan di Sini -->
+          <option value="10">10 Detik (Sesi Kilat)</option>
           <option value="30">30 Detik (Sesi Cepat)</option>
           <option value="60" selected>60 Detik (Sesi Sedang)</option>
           <option value="90">90 Detik (Sesi Lama)</option>
@@ -490,6 +492,13 @@
     });
 
     function startGame() {
+      // BERSIHKAN SEMUA INTERVAL DULU AGAR TIDAK ERROR / BERTUMPUK SAAT RESTART
+      clearInterval(mainTimerInterval);
+      clearInterval(mathTimerInterval);
+      
+      // PASTIKAN ANIMASI GSAP TIDAK DALAM KONDISI PAUSED
+      gsap.globalTimeline.play();
+
       gameMode = document.getElementById('mode-select').value;
       gameTime = parseInt(document.getElementById('time-select').value);
       
@@ -556,6 +565,10 @@
       isPlaying = false;
       clearInterval(mainTimerInterval);
       clearInterval(mathTimerInterval);
+      
+      // Hentikan fungsi kemunculan nyamuk dengan tuntas
+      if (spawnTimeout) spawnTimeout.kill();
+      
       bgMusic.pause();
       
       document.body.classList.remove('playing');
@@ -573,7 +586,7 @@
     // ==========================================
     function triggerMathQuestion() {
       isPlaying = false; 
-      gsap.globalTimeline.pause(); 
+      gsap.globalTimeline.pause(); // Animasi di-pause
       gsap.set(swatterContainer, { visibility: 'hidden' });
       document.body.classList.remove('playing');
 
@@ -611,7 +624,7 @@
         if(mathTimeRemaining <= 0) {
           clearInterval(mathTimerInterval);
           playSound(sounds.wrong);
-          triggerGameOver("Terlalu Lambat! Kamu kehabisan waktu.");
+          triggerGameOver("Terlalu Lambat! Kamu kehabisan waktu."); // Timeout saat menjawab soal
         }
       }, 1000);
     }
@@ -629,7 +642,8 @@
         
         document.body.classList.add('playing');
         gsap.set(swatterContainer, { visibility: 'visible' });
-        gsap.globalTimeline.play(); 
+        
+        gsap.globalTimeline.play(); // Lanjutkan Animasi
         isPlaying = true;
         
         mainTimerInterval = setInterval(updateMainTimer, 1000);
@@ -728,6 +742,9 @@
     }
 
     function emitGnats() {
+      // TAMBAHAN KEAMANAN: Cegah pemanggilan berulang saat game over (Mencegah Lag/Bug Restart)
+      if (!isPlaying) return; 
+      
       if (uiGameOver.classList.contains('hidden') && isPlaying) {
         createGnats(Math.floor(Math.random() * 2) + 3);
       }
