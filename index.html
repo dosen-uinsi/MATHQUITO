@@ -9,7 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* PENYESUAIAN RESPONSIVE UTAMA (PENTING UNTUK HP) */
     html {
+      /* Di laptop mengikuti lebar layar, di HP dikunci minimal 14px agar tidak kekecilan */
       font-size: max(14px, 0.8vw); 
     }
     
@@ -38,8 +40,10 @@
     .panel {
       background: #ffffff; padding: 40px; border-radius: 24px;
       max-width: 500px; width: 100%; color: #333;
-      border: 4px solid #e0e0e0; box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1;
-      transform: translateY(-5px); box-sizing: border-box;
+      border: 4px solid #e0e0e0; box-sizing: border-box;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1;
+      transform: translateY(-5px);
+      position: relative;
     }
     
     .main-logo {
@@ -88,6 +92,11 @@
     }
     .action-btn:hover { filter: brightness(1.1); }
     .action-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #6B7B00; }
+    
+    .info-btn-style {
+      background: #FFA502; border-color: #E67E22; box-shadow: 0 6px 0 #E67E22; font-size: 1.5rem; padding: 12px 20px;
+    }
+    .info-btn-style:active { transform: translateY(6px); box-shadow: 0 0 0 #E67E22; }
 
     /* =========================================
        MATH POPUP UI (SOAL & JAWABAN)
@@ -160,6 +169,7 @@
       .checkmark { height: 40px; font-size: 1.2rem; border-width: 2px; }
       select { padding: 10px; font-size: 1rem; border-width: 2px; }
       .action-btn { padding: 12px 20px; font-size: 1.5rem; border-width: 2px; box-shadow: 0 4px 0 #6B7B00; }
+      .info-btn-style { font-size: 1.2rem; box-shadow: 0 4px 0 #E67E22; }
       
       .hud { top: 10px; left: 10px; right: 10px; }
       .hud-logo { height: 100px; top: -5px; } 
@@ -189,6 +199,7 @@
   <!-- ================= START SCREEN ================= -->
   <div id="start-screen" class="overlay">
     <div class="panel">
+      <!-- LOGO MATHQUITO BESAR -->
       <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" />
       
       <div class="form-group">
@@ -216,7 +227,16 @@
       </div>
 
       <button id="start-btn" class="action-btn">MULAI BERMAIN</button>
+      
+      <button id="info-btn" class="action-btn info-btn-style">💡 TAHUKAH KAMU?</button>
     </div>
+  </div>
+
+  <!-- ================= INFO SCREEN (TAHUKAH KAMU) ================= -->
+  <!-- Modifikasi agar layar penuh, background hitam transparan, dan gambar proporsional -->
+  <div id="info-screen" class="overlay hidden" style="background: rgba(0,0,0,0.9); z-index: 200; padding: 0;">
+    <button id="close-info-btn" style="position: absolute; top: 15px; right: 15px; font-size: 2.5rem; background: #FF4757; color: white; border: 3px solid white; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 201; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">&times;</button>
+    <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/INFOGRAFIK%20NYAMUK.jpg" alt="Infografik Nyamuk" style="width: 100vw; height: 100vh; object-fit: contain;" />
   </div>
 
   <!-- ================= MATH POPUP ================= -->
@@ -240,6 +260,7 @@
   <!-- ================= GAME OVER SCREEN ================= -->
   <div id="game-over-screen" class="overlay hidden">
     <div class="panel">
+      <!-- Logo di Game Over Diperbesar -->
       <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" style="max-height: 150px;" />
       
       <h1 style="color: #FF4757; font-size: 2.5rem; text-shadow: none;">GAME OVER</h1>
@@ -255,6 +276,7 @@
       <span class="badge-icon">🦟</span> <span id="score-text">0</span>
     </div>
     
+    <!-- LOGO MUNCUL DI TENGAH ATAS SAAT BERMAIN (TERKUNCI DI TENGAH) -->
     <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="hud-logo" />
     
     <div class="badge time-badge" id="time-badge-container">
@@ -283,7 +305,7 @@
         <path fill="none" stroke="#5D5D45" stroke-width="2" d="M-13 8l7-7M13 8L6 1" />
       </g>
       
-      <!-- Splatter -->
+      <!-- Splatter (Cipratan) -->
       <g id="splatter-template">
         <path fill="#8B9B0F" d="M0,-8 C8,-15 15,-5 8,2 C12,10 5,12 0,8 C-5,15 -15,10 -8,2 C-15,-5 -8,-15 0,-8 Z" />
         <circle fill="#6B7B00" cx="12" cy="-12" r="2.5" />
@@ -428,6 +450,7 @@
     const uiStart = document.getElementById('start-screen');
     const uiMath = document.getElementById('math-screen');
     const uiGameOver = document.getElementById('game-over-screen');
+    const uiInfo = document.getElementById('info-screen');
     const uiHud = document.getElementById('game-hud');
     const swatterContainer = document.querySelector('.swatter-container');
     const scoreText = document.getElementById('score-text');
@@ -435,7 +458,7 @@
     const timeBadge = document.getElementById('time-badge-container');
     
     // ==========================================
-    // LOGIKA START SCREEN & MENU
+    // LOGIKA START SCREEN, MENU & INFO POPUP
     // ==========================================
     const grid = document.querySelector('.checkbox-grid');
     for(let i=2; i<=9; i++) {
@@ -455,6 +478,15 @@
     document.getElementById('restart-btn').addEventListener('click', () => {
       uiGameOver.classList.add('hidden');
       uiStart.classList.remove('hidden');
+    });
+
+    // --- EVENT LISTENER TAHUKAH KAMU ---
+    document.getElementById('info-btn').addEventListener('click', () => {
+      uiInfo.classList.remove('hidden');
+    });
+    
+    document.getElementById('close-info-btn').addEventListener('click', () => {
+      uiInfo.classList.add('hidden');
     });
 
     function startGame() {
@@ -608,16 +640,12 @@
     }
 
     // ==========================================
-    // MEKANIK KONTROL PEMAIN & MUSUH (OPTIMAL HP)
+    // MEKANIK KONTROL PEMAIN & MUSUH
     // ==========================================
     window.addEventListener('mousemove', onMove);
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('mousedown', swat);
-    // Ditransformasikan menjadi sistem sentuh murni (touchstart agresif)
-    window.addEventListener('touchstart', (e) => {
-      onMove(e); // Pindahkan raket ke titik sentuh dulu
-      swat(e);   // Eksekusi pukulan instan
-    }, { passive: false });
+    window.addEventListener('touchstart', swat, { passive: false });
 
     function getPointer(e) {
       if (e.touches && e.touches.length > 0) return e.touches[0];
@@ -629,22 +657,14 @@
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
-      
-      // OPTIMASI: Menggunakan gsap.set (durasi 0) khusus untuk HP agar tidak ada delay gerak lambat
-      gsap.set(swatterContainer, { 
-        x: point.clientX, 
-        y: point.clientY 
-      });
+      gsap.to(swatterContainer, { duration: 0.05, x: point.pageX, y: point.pageY, ease: "power1.out" });
     }
 
     function swat(e) {
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
-
-      // Jalankan animasi swing ayunan raket
-      gsap.to('.swatter', { duration: 0.04, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
-
+      gsap.to('.swatter', { duration: 0.05, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
       const isHitSuccess = checkPoint(point.clientX, point.clientY);
       if (isHitSuccess) playSound(sounds.hitSplat);
       else playSound(sounds.miss);
