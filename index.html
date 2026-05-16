@@ -2,16 +2,20 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MATHQUITO - Math & Action Edutainment</title>
 
   <!-- Menggunakan Font Playful/Kasual standar Game -->
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    html {
+      font-size: max(14px, 0.8vw); 
+    }
+    
     html, body {
       margin: 0; width: 100%; height: 100%;
-      font-size: 1vw; overflow: hidden;
+      overflow: hidden;
       background-color: #efefef;
       -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: none;
       font-family: 'Fredoka', sans-serif;
@@ -27,24 +31,20 @@
       backdrop-filter: blur(8px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 100; text-align: center;
+      padding: 10px; box-sizing: border-box;
     }
     .hidden { display: none !important; }
     
     .panel {
       background: #ffffff; padding: 40px; border-radius: 24px;
-      max-width: 500px; width: 90%; color: #333;
-      border: 4px solid #e0e0e0;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1;
-      transform: translateY(-5px);
+      max-width: 500px; width: 100%; color: #333;
+      border: 4px solid #e0e0e0; box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1;
+      transform: translateY(-5px); box-sizing: border-box;
     }
     
-    /* PENGATURAN LOGO MENU UTAMA */
     .main-logo {
-      max-width: 90%;
-      height: auto;
-      max-height: 250px;
-      margin: 0 auto 20px auto;
-      display: block;
+      max-width: 100%; height: auto; max-height: 250px;
+      margin: 0 auto 20px auto; display: block;
       filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
     }
 
@@ -54,9 +54,9 @@
        START SCREEN FORM & CHECKBOXES
        ========================================= */
     .form-group { margin-bottom: 20px; text-align: left; }
-    .form-group label.title { font-weight: 700; display: block; margin-bottom: 12px; font-size: 1.2rem; color: #555; }
+    .form-group label.title { font-weight: 700; display: block; margin-bottom: 10px; font-size: 1.2rem; color: #555; }
     
-    .checkbox-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .checkbox-btn { display: block; position: relative; cursor: pointer; user-select: none; }
     .checkbox-btn input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
     .checkmark {
@@ -74,7 +74,7 @@
 
     select { 
       width: 100%; padding: 12px 15px; font-size: 1.2rem; font-weight: 600; font-family: inherit;
-      border-radius: 12px; border: 3px solid #ccc; background-color: #f9f9f9;
+      border-radius: 12px; border: 3px solid #ccc; background-color: #f9f9f9; box-sizing: border-box;
       color: #444; outline: none; cursor: pointer; box-shadow: 0 4px 0 #ccc; transition: 0.1s;
       appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
       background-repeat: no-repeat; background-position: right 15px center; background-size: 20px;
@@ -84,7 +84,7 @@
     .action-btn {
       padding: 16px 40px; font-size: 1.8rem; cursor: pointer; border: 3px solid #6B7B00;
       border-radius: 16px; background: #8B9B0F; color: white; font-weight: 700; font-family: inherit;
-      box-shadow: 0 6px 0 #6B7B00; transition: all 0.1s; margin-top: 15px; width: 100%; letter-spacing: 1px;
+      box-shadow: 0 6px 0 #6B7B00; transition: all 0.1s; margin-top: 15px; width: 100%; letter-spacing: 1px; box-sizing: border-box;
     }
     .action-btn:hover { filter: brightness(1.1); }
     .action-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #6B7B00; }
@@ -94,7 +94,7 @@
        ========================================= */
     #math-timer-bar {
       width: 100%; height: 24px; background: #eee; border-radius: 12px; border: 3px solid #ddd;
-      overflow: hidden; margin-bottom: 20px; position: relative;
+      overflow: hidden; margin-bottom: 20px; position: relative; box-sizing: border-box;
     }
     #math-timer-fill {
       width: 100%; height: 100%; background: #FF4757; border-radius: 8px;
@@ -122,43 +122,66 @@
       display: flex; justify-content: space-between; align-items: flex-start;
     }
     
-    /* LOGO HUD TERKUNCI DI TENGAH (ABSOLUTE POSITIONING) */
     .hud-logo {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      height: 180px; 
-      filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)); 
-      pointer-events: none; 
+      position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+      height: 220px; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)); pointer-events: none; 
     }
 
-    /* KOTAK BADGE UKURAN TETAP */
     .badge {
       display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 700;
       padding: 10px 24px; border-radius: 50px; font-size: 2rem; border: 4px solid white;
       box-shadow: 0 6px 15px rgba(0,0,0,0.2), 0 4px 0 rgba(0,0,0,0.1);
-      min-width: 170px; 
-      box-sizing: border-box;
-      pointer-events: none;
+      min-width: 170px; box-sizing: border-box; pointer-events: none;
     }
     
-    #score-text, #time-text {
-      display: inline-block;
-      min-width: 45px; 
-      text-align: center;
-    }
+    #score-text, #time-text { display: inline-block; min-width: 45px; text-align: center; }
 
     .score-badge { background: #FFA502; color: white; text-shadow: 1px 1px 0 #E67E22; }
     .time-badge { background: #FF4757; color: white; text-shadow: 1px 1px 0 #C0392B; }
     .badge-icon { font-size: 2.2rem; filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.2)); }
 
     /* =========================================
-       GAME SVG STYLES
+       GAME SVG STYLES & SWATTER
        ========================================= */
     .game { width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
     .swatter-container { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10; visibility: hidden; }
+    .swatter-wrapper { transform-origin: center center; }
     .swatter { transform: perspective(500px); }
+
+    /* =========================================
+       MEDIA QUERIES (KHUSUS LAYAR HP / TABLET)
+       ========================================= */
+    @media (max-width: 768px) {
+      .panel { padding: 25px; border-width: 3px; border-radius: 18px; }
+      .main-logo { max-height: 140px; margin-bottom: 10px; }
+      
+      h2 { font-size: 1.5rem; }
+      .form-group label.title { font-size: 1rem; }
+      .checkmark { height: 40px; font-size: 1.2rem; border-width: 2px; }
+      select { padding: 10px; font-size: 1rem; border-width: 2px; }
+      .action-btn { padding: 12px 20px; font-size: 1.5rem; border-width: 2px; box-shadow: 0 4px 0 #6B7B00; }
+      
+      .hud { top: 10px; left: 10px; right: 10px; }
+      .hud-logo { height: 100px; top: -5px; } 
+      .badge { min-width: 100px; padding: 6px 12px; font-size: 1.2rem; border-width: 3px; gap: 4px; }
+      .badge-icon { font-size: 1.4rem; }
+      #score-text, #time-text { min-width: 25px; }
+      
+      #math-question { font-size: 3rem; margin: 10px 0 15px 0; }
+      .math-options { gap: 10px; }
+      .math-opt-btn { font-size: 2rem; padding: 12px 0; border-width: 2px; box-shadow: 0 5px 0 #1E90FF; }
+      
+      .swatter-wrapper { transform: scale(0.65); }
+    }
+
+    @media (max-width: 400px) {
+      .checkbox-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .checkmark { height: 35px; font-size: 1rem; padding: 0; }
+      .hud-logo { height: 80px; top: 0; }
+      .badge { min-width: 80px; padding: 5px 10px; font-size: 1rem; }
+      .math-opt-btn { font-size: 1.6rem; }
+      .swatter-wrapper { transform: scale(0.5); }
+    }
   </style>
 </head>
 <body>
@@ -166,7 +189,6 @@
   <!-- ================= START SCREEN ================= -->
   <div id="start-screen" class="overlay">
     <div class="panel">
-      <!-- LOGO MATHQUITO BESAR -->
       <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" />
       
       <div class="form-group">
@@ -201,7 +223,7 @@
   <div id="math-screen" class="overlay hidden">
     <div class="panel" style="max-width: 600px;">
       <h2 style="color: #FF4757; margin-bottom: 5px;">Waktu Habis!</h2>
-      <div style="color: #888; font-size: 1.2rem; margin-bottom: 25px; font-weight: 600;">Jawab cepat untuk dapat tambahan +10 Detik</div>
+      <div style="color: #888; font-size: 1.1rem; margin-bottom: 20px; font-weight: 600;">Jawab cepat untuk dapat tambahan +10 Detik</div>
       
       <div id="math-timer-bar"><div id="math-timer-fill"></div></div>
       
@@ -218,12 +240,11 @@
   <!-- ================= GAME OVER SCREEN ================= -->
   <div id="game-over-screen" class="overlay hidden">
     <div class="panel">
-      <!-- Logo di Game Over Diperbesar -->
       <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="main-logo" style="max-height: 150px;" />
       
       <h1 style="color: #FF4757; font-size: 2.5rem; text-shadow: none;">GAME OVER</h1>
-      <h2 style="margin: 20px 0;">Nyamuk Terpukul:<br><span id="final-score" style="color: #FFA502; font-size: 5rem; text-shadow: 2px 2px 0 #E67E22;">0</span></h2>
-      <p id="game-over-msg" style="font-size: 1.4rem; font-weight: 600; color: #555; background: #f0f0f0; padding: 10px; border-radius: 10px;"></p>
+      <h2 style="margin: 15px 0;">Nyamuk Terpukul:<br><span id="final-score" style="color: #FFA502; font-size: 4.5rem; text-shadow: 2px 2px 0 #E67E22;">0</span></h2>
+      <p id="game-over-msg" style="font-size: 1.2rem; font-weight: 600; color: #555; background: #f0f0f0; padding: 10px; border-radius: 10px;"></p>
       <button id="restart-btn" class="action-btn" style="background: #1E90FF; border-color: #0277BD; box-shadow: 0 6px 0 #0277BD;">MAIN LAGI</button>
     </div>
   </div>
@@ -234,11 +255,10 @@
       <span class="badge-icon">🦟</span> <span id="score-text">0</span>
     </div>
     
-    <!-- LOGO MUNCUL DI TENGAH ATAS SAAT BERMAIN (TERKUNCI DI TENGAH) -->
     <img src="https://raw.githubusercontent.com/dosen-uinsi/MATHQUITO/refs/heads/main/MATHQUITO.png" alt="Mathquito Logo" class="hud-logo" />
     
     <div class="badge time-badge" id="time-badge-container">
-      <span class="badge-icon">⏱️</span> <span id="time-text">60</span><span style="font-size: 1.5rem; margin-left:2px;">s</span>
+      <span class="badge-icon">⏱️</span> <span id="time-text">60</span><span style="font-size: 1.2rem; margin-left:2px;">s</span>
     </div>
   </div>
 
@@ -263,7 +283,7 @@
         <path fill="none" stroke="#5D5D45" stroke-width="2" d="M-13 8l7-7M13 8L6 1" />
       </g>
       
-      <!-- Splatter (Cipratan) -->
+      <!-- Splatter -->
       <g id="splatter-template">
         <path fill="#8B9B0F" d="M0,-8 C8,-15 15,-5 8,2 C12,10 5,12 0,8 C-5,15 -15,10 -8,2 C-15,-5 -8,-15 0,-8 Z" />
         <circle fill="#6B7B00" cx="12" cy="-12" r="2.5" />
@@ -293,15 +313,17 @@
 
   <!-- ================= RAKET PEMUKUL ================= -->
   <div class="swatter-container">
-    <svg class="swatter" overflow="visible" opacity="1">
-      <path fill="none" stroke="#645CA8" stroke-width="4" d="M0 32v45" />
-      <path fill="none" stroke="#4D99D3" stroke-width="2" d="M-20-30v60m10-60v60M0-30v60m0-60v60m10-60v60m10-60v60m-50-50h60m-60 10h60M-30 0h60m-60 0h60m-60 10h60m-60 10h60" />
-      <path fill="none" stroke="#645CA8" stroke-width="4" d="M30 20v-50h-60v50c0 5.5 4.5 10 10 10h40c5.5 0 10-4.5 10-10z" />
-      <path fill="#4699D4" stroke="#645CA8" stroke-width="2" d="M0 36c-2.8 0-5-2.2-5-5H5c0 2.8-2.2 5-5 5z" />
-      <path fill="#FFF" d="M22.6 101.6c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8 0-10-14-10-14 0 0 1 .1 1.8.2 2.6-4.8 2.3-7.5 7.5-7.5 14.2 0 4 4.3 6 7 4.2-1.1 2.5-2.1 5.4-1.5 10.1 1.3 9.2 8.5 13.8 8.5 13.8-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4s6.2-2.9 9.3-5.2c4.3-3.3 1.9-9.2-2-11z" />
-      <path fill="#BFBFBF" d="M26.7 106.4c.6 2.1.1 4.4-2 6-3.1 2.3-4.7 1.8-9.3 5.2s-4.6 5.1-7.7 7.4c-6.1 4.6-13.8-5.7-7.6-10.3.8 5.4 2.1 5.6 5.2 6 3.1.4 6.9-6.9 12.9-8.8 6-1.7 8.5-5.5 8.5-5.5zm-22.6 6C-5.9 101 2.9 91.5-.7 80.7c-1.8-5.2-3.4-14.1.8-18.2C-3.4 62.5-7 65-7 70s2 6.2 2 13-5 8.8-3.8 18 8.5 13.8 8.5 13.8c1.7-1.3 2.9-1.7 4.4-2.4zM-7 90.9c.4-.9.8-1.7 1.1-2.6-4.6-.4-5.3-5.6-3.8-13.7-2.9 2.7-4.4 7-4.4 12 .1 4.1 4.4 6.1 7.1 4.3z" />
-      <path fill="none" stroke="#818181" stroke-width="2" stroke-linecap="round" d="M.1 114.8s-7.2-4.5-8.5-13.8 3.8-11.2 3.8-18-2-8-2-13c0-10 14-10 14 0 0 4.1-1 8.2-1 13s4.2 8 4.2 8m-6.2 21.4c-1.5.7-2.7 1.1-4.3 2.3-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4 4.6-3.4 6.2-2.9 9.3-5.2 6.1-4.6-1.5-14.8-7.6-10.3-1.6 1.2-2.4 2.3-3.5 3.5m9-4c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8m-13.8 2.5C-11.3 74.8-14 80-14 86.7c0 4 4.3 6 7 4.2" />
-    </svg>
+    <div class="swatter-wrapper">
+      <svg class="swatter" overflow="visible" opacity="1">
+        <path fill="none" stroke="#645CA8" stroke-width="4" d="M0 32v45" />
+        <path fill="none" stroke="#4D99D3" stroke-width="2" d="M-20-30v60m10-60v60M0-30v60m0-60v60m10-60v60m10-60v60m-50-50h60m-60 10h60M-30 0h60m-60 0h60m-60 10h60m-60 10h60" />
+        <path fill="none" stroke="#645CA8" stroke-width="4" d="M30 20v-50h-60v50c0 5.5 4.5 10 10 10h40c5.5 0 10-4.5 10-10z" />
+        <path fill="#4699D4" stroke="#645CA8" stroke-width="2" d="M0 36c-2.8 0-5-2.2-5-5H5c0 2.8-2.2 5-5 5z" />
+        <path fill="#FFF" d="M22.6 101.6c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8 0-10-14-10-14 0 0 1 .1 1.8.2 2.6-4.8 2.3-7.5 7.5-7.5 14.2 0 4 4.3 6 7 4.2-1.1 2.5-2.1 5.4-1.5 10.1 1.3 9.2 8.5 13.8 8.5 13.8-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4s6.2-2.9 9.3-5.2c4.3-3.3 1.9-9.2-2-11z" />
+        <path fill="#BFBFBF" d="M26.7 106.4c.6 2.1.1 4.4-2 6-3.1 2.3-4.7 1.8-9.3 5.2s-4.6 5.1-7.7 7.4c-6.1 4.6-13.8-5.7-7.6-10.3.8 5.4 2.1 5.6 5.2 6 3.1.4 6.9-6.9 12.9-8.8 6-1.7 8.5-5.5 8.5-5.5zm-22.6 6C-5.9 101 2.9 91.5-.7 80.7c-1.8-5.2-3.4-14.1.8-18.2C-3.4 62.5-7 65-7 70s2 6.2 2 13-5 8.8-3.8 18 8.5 13.8 8.5 13.8c1.7-1.3 2.9-1.7 4.4-2.4zM-7 90.9c.4-.9.8-1.7 1.1-2.6-4.6-.4-5.3-5.6-3.8-13.7-2.9 2.7-4.4 7-4.4 12 .1 4.1 4.4 6.1 7.1 4.3z" />
+        <path fill="none" stroke="#818181" stroke-width="2" stroke-linecap="round" d="M.1 114.8s-7.2-4.5-8.5-13.8 3.8-11.2 3.8-18-2-8-2-13c0-10 14-10 14 0 0 4.1-1 8.2-1 13s4.2 8 4.2 8m-6.2 21.4c-1.5.7-2.7 1.1-4.3 2.3-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4 4.6-3.4 6.2-2.9 9.3-5.2 6.1-4.6-1.5-14.8-7.6-10.3-1.6 1.2-2.4 2.3-3.5 3.5m9-4c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8m-13.8 2.5C-11.3 74.8-14 80-14 86.7c0 4 4.3 6 7 4.2" />
+      </svg>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -586,12 +608,16 @@
     }
 
     // ==========================================
-    // MEKANIK KONTROL PEMAIN & MUSUH
+    // MEKANIK KONTROL PEMAIN & MUSUH (OPTIMAL HP)
     // ==========================================
     window.addEventListener('mousemove', onMove);
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('mousedown', swat);
-    window.addEventListener('touchstart', swat, { passive: false });
+    // Ditransformasikan menjadi sistem sentuh murni (touchstart agresif)
+    window.addEventListener('touchstart', (e) => {
+      onMove(e); // Pindahkan raket ke titik sentuh dulu
+      swat(e);   // Eksekusi pukulan instan
+    }, { passive: false });
 
     function getPointer(e) {
       if (e.touches && e.touches.length > 0) return e.touches[0];
@@ -603,14 +629,22 @@
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
-      gsap.to(swatterContainer, { duration: 0.05, x: point.pageX, y: point.pageY, ease: "power1.out" });
+      
+      // OPTIMASI: Menggunakan gsap.set (durasi 0) khusus untuk HP agar tidak ada delay gerak lambat
+      gsap.set(swatterContainer, { 
+        x: point.clientX, 
+        y: point.clientY 
+      });
     }
 
     function swat(e) {
       if (!isPlaying) return;
       if (e.cancelable) e.preventDefault();
       const point = getPointer(e);
-      gsap.to('.swatter', { duration: 0.05, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
+
+      // Jalankan animasi swing ayunan raket
+      gsap.to('.swatter', { duration: 0.04, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
+
       const isHitSuccess = checkPoint(point.clientX, point.clientY);
       if (isHitSuccess) playSound(sounds.hitSplat);
       else playSound(sounds.miss);
