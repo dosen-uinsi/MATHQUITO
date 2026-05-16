@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gnat Attack - Professional Edutainment</title>
+
+  <!-- Menggunakan Font Playful/Kasual standar Game -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    html, body {
+      margin: 0; width: 100%; height: 100%;
+      font-size: 1vw; overflow: hidden;
+      background-color: #efefef;
+      -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: none;
+      font-family: 'Fredoka', sans-serif; /* Menerapkan Font Baru */
+    }
+    body.playing { cursor: none; }
+
+    /* =========================================
+       UI PANELS & OVERLAYS (GLASSMORPHISM)
+       ========================================= */
+    .overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px); /* Efek blur modern pada background */
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 100; text-align: center;
+    }
+    .hidden { display: none !important; }
+    
+    .panel {
+      background: #ffffff; padding: 40px; border-radius: 24px;
+      max-width: 500px; width: 90%; color: #333;
+      border: 4px solid #e0e0e0;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 10px 0 #d1d1d1; /* Efek 3D pada Panel */
+      transform: translateY(-5px);
+    }
+    
+    h1 { margin-top: 0; color: #8B9B0F; font-size: 3.5rem; text-shadow: 2px 2px 0px #e6f0a3; margin-bottom: 5px; line-height: 1.1; }
+    h2 { margin-top: 0; font-size: 2rem; color: #333; }
+    .subtitle { color: #888; font-size: 1.2rem; margin-bottom: 25px; font-weight: 600; }
+
+    /* =========================================
+       START SCREEN FORM & CHECKBOXES
+       ========================================= */
+    .form-group { margin-bottom: 20px; text-align: left; }
+    .form-group label.title { font-weight: 700; display: block; margin-bottom: 12px; font-size: 1.2rem; color: #555; }
+    
+    /* Desain Checkbox 3D */
+    .checkbox-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .checkbox-btn { display: block; position: relative; cursor: pointer; user-select: none; }
+    .checkbox-btn input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+    .checkmark {
+      display: flex; justify-content: center; align-items: center; height: 50px;
+      background-color: #f0f0f0; border-radius: 12px; border: 3px solid #ccc;
+      font-weight: 700; font-size: 1.5rem; color: #888;
+      box-shadow: 0 4px 0 #ccc; transition: all 0.1s;
+    }
+    .checkbox-btn:hover input ~ .checkmark { filter: brightness(0.95); }
+    /* Saat Dicentang */
+    .checkbox-btn input:checked ~ .checkmark {
+      background-color: #4699D4; border-color: #2b70a0; color: white;
+      box-shadow: 0 4px 0 #2b70a0; transform: translateY(-2px);
+    }
+    /* Saat Ditekan */
+    .checkbox-btn:active input ~ .checkmark { transform: translateY(4px); box-shadow: 0 0 0 #2b70a0; }
+
+    /* Desain Dropdown Select */
+    select { 
+      width: 100%; padding: 12px 15px; font-size: 1.2rem; font-weight: 600; font-family: inherit;
+      border-radius: 12px; border: 3px solid #ccc; background-color: #f9f9f9;
+      color: #444; outline: none; cursor: pointer; box-shadow: 0 4px 0 #ccc; transition: 0.1s;
+      appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat; background-position: right 15px center; background-size: 20px;
+    }
+    select:active { transform: translateY(4px); box-shadow: 0 0 0 #ccc; }
+
+    /* Tombol Aksi Utama (Play/Restart) */
+    .action-btn {
+      padding: 16px 40px; font-size: 1.8rem; cursor: pointer; border: 3px solid #6B7B00;
+      border-radius: 16px; background: #8B9B0F; color: white; font-weight: 700; font-family: inherit;
+      box-shadow: 0 6px 0 #6B7B00; transition: all 0.1s; margin-top: 15px; width: 100%; letter-spacing: 1px;
+    }
+    .action-btn:hover { filter: brightness(1.1); }
+    .action-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #6B7B00; }
+
+    /* =========================================
+       MATH POPUP UI (SOAL & JAWABAN)
+       ========================================= */
+    #math-timer-bar {
+      width: 100%; height: 24px; background: #eee; border-radius: 12px; border: 3px solid #ddd;
+      overflow: hidden; margin-bottom: 20px; position: relative;
+    }
+    #math-timer-fill {
+      width: 100%; height: 100%; background: #FF4757; border-radius: 8px;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15); transition: width 1s linear;
+    }
+    #math-question { 
+      font-size: 4.5rem; font-weight: 700; margin: 15px 0 25px 0; color: #2F3542; 
+      background: #f1f2f6; border-radius: 20px; padding: 10px; border: 4px dashed #ced6e0;
+    }
+    
+    .math-options { display: flex; gap: 15px; justify-content: center; }
+    .math-opt-btn {
+      flex: 1; padding: 20px 0; font-size: 2.8rem; font-weight: 700; font-family: inherit;
+      border: 3px solid #1E90FF; border-radius: 16px; background: #70A1FF; color: white;
+      cursor: pointer; box-shadow: 0 8px 0 #1E90FF; transition: all 0.1s; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    }
+    .math-opt-btn:hover { background: #5352ED; border-color: #3742FA; box-shadow: 0 8px 0 #3742FA; }
+    .math-opt-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #3742FA; }
+
+    /* =========================================
+       HUD (Heads Up Display) - SKOR & WAKTU
+       ========================================= */
+    .hud {
+      position: fixed; top: 20px; left: 20px; right: 20px; z-index: 20; pointer-events: none;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .badge {
+      display: flex; align-items: center; gap: 10px; font-family: inherit; font-weight: 700;
+      padding: 10px 24px; border-radius: 50px; font-size: 2rem; border: 4px solid white;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2), 0 4px 0 rgba(0,0,0,0.1);
+    }
+    .score-badge { background: #FFA502; color: white; text-shadow: 1px 1px 0 #E67E22; }
+    .time-badge { background: #FF4757; color: white; text-shadow: 1px 1px 0 #C0392B; }
+    .badge-icon { font-size: 2.2rem; filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.2)); }
+
+    /* =========================================
+       GAME SVG STYLES
+       ========================================= */
+    .game { width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
+    .swatter-container { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10; visibility: hidden; }
+    .swatter { transform: perspective(500px); }
+  </style>
+</head>
+<body>
+
+  <!-- ================= START SCREEN ================= -->
+  <div id="start-screen" class="overlay">
+    <div class="panel">
+      <h1>Gnat Attack</h1>
+      <div class="subtitle">Math & Action Edutainment</div>
+      
+      <div class="form-group">
+        <label class="title">🕹️ Mode Permainan:</label>
+        <select id="mode-select">
+          <option value="edu">Bermain Sambil Belajar (Matematika)</option>
+          <option value="arcade">Arcade Bebas (Tanpa Soal)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="perkalian-group">
+        <label class="title">✖️ Pilih Perkalian (Minimal 1):</label>
+        <div class="checkbox-grid">
+          <!-- Digenerate oleh JS -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="title">⏱️ Durasi Waktu Awal:</label>
+        <select id="time-select">
+          <option value="30">30 Detik (Sesi Cepat)</option>
+          <option value="60" selected>60 Detik (Sesi Sedang)</option>
+          <option value="90">90 Detik (Sesi Lama)</option>
+        </select>
+      </div>
+
+      <button id="start-btn" class="action-btn">MULAI BERMAIN</button>
+    </div>
+  </div>
+
+  <!-- ================= MATH POPUP ================= -->
+  <div id="math-screen" class="overlay hidden">
+    <div class="panel" style="max-width: 600px;">
+      <h2 style="color: #FF4757; margin-bottom: 5px;">Waktu Habis!</h2>
+      <div class="subtitle" style="color: #555;">Jawab cepat untuk dapat tambahan +10 Detik</div>
+      
+      <div id="math-timer-bar"><div id="math-timer-fill"></div></div>
+      
+      <div id="math-question">7 x 8 = ?</div>
+      
+      <div class="math-options">
+        <button class="math-opt-btn" id="btn-opt-0">56</button>
+        <button class="math-opt-btn" id="btn-opt-1">54</button>
+        <button class="math-opt-btn" id="btn-opt-2">64</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GAME OVER SCREEN ================= -->
+  <div id="game-over-screen" class="overlay hidden">
+    <div class="panel">
+      <h1 style="color: #FF4757;">GAME OVER</h1>
+      <h2 style="margin: 20px 0;">Nyamuk Terpukul:<br><span id="final-score" style="color: #FFA502; font-size: 5rem; text-shadow: 2px 2px 0 #E67E22;">0</span></h2>
+      <p id="game-over-msg" style="font-size: 1.4rem; font-weight: 600; color: #555; background: #f0f0f0; padding: 10px; border-radius: 10px;"></p>
+      <button id="restart-btn" class="action-btn" style="background: #1E90FF; border-color: #0277BD; box-shadow: 0 6px 0 #0277BD;">MAIN LAGI</button>
+    </div>
+  </div>
+
+  <!-- ================= HEADS UP DISPLAY (HUD) ================= -->
+  <div class="hud hidden" id="game-hud">
+    <div class="badge score-badge">
+      <span class="badge-icon">🦟</span> <span id="score-text">0</span>
+    </div>
+    <div class="badge time-badge" id="time-badge-container">
+      <span class="badge-icon">⏱️</span> <span id="time-text">60</span>s
+    </div>
+  </div>
+
+  <!-- ================= GAME GRAPHICS (SVG) ================= -->
+  <svg class="game" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <!-- Nyamuk -->
+      <g class="gnat">
+        <g class="wing1" stroke-width="2">
+          <path fill="#D5D8D0" stroke="#9F9F86" d="M-6-3c-7 13-14 16-20 10M6-3c7 13 14 16 20 10" />
+          <path fill="none" stroke="#5D5D45" d="M6 15V4M-6 15V4" />
+        </g>
+        <g class="wing2" stroke-width="2" visibility="hidden" opacity="0">
+          <path fill="none" stroke="#5D5D45" d="M11 13L2 4M-11 13l9-9" />
+          <path fill="#D5D8D0" stroke="#9F9F86" d="M-4-2c-15 1-21-4-19-12M3-2c15 1 21-4 19-12" />
+        </g>
+        <path fill="#ACADA6" d="M0 9c-3.9 0-7-3.1-7-7v-4c0-3.9 3.1-7 7-7s7 3.1 7 7v4c0 3.9-3.1 7-7 7z" />
+        <circle fill="#F70000" cx="-4" cy="-7" r="2" />
+        <circle fill="#F70000" cx="4" cy="-7" r="2" />
+        <path fill="none" stroke="#2B2920" stroke-width="2" d="M7 2c0 3.9-3.1 7-7 7s-7-3.1-7-7" />
+        <path fill="none" stroke="#9F9F86" stroke-width="2" d="M-5-13l5 5 5-5" />
+        <path fill="none" stroke="#5D5D45" stroke-width="2" d="M-13 8l7-7M13 8L6 1" />
+      </g>
+      
+      <!-- Splatter (Cipratan) -->
+      <g id="splatter-template">
+        <path fill="#8B9B0F" d="M0,-8 C8,-15 15,-5 8,2 C12,10 5,12 0,8 C-5,15 -15,10 -8,2 C-15,-5 -8,-15 0,-8 Z" />
+        <circle fill="#6B7B00" cx="12" cy="-12" r="2.5" />
+        <circle fill="#8B9B0F" cx="-14" cy="10" r="2" />
+        <circle fill="#A3B514" cx="14" cy="12" r="3" />
+        <circle fill="#6B7B00" cx="-12" cy="-14" r="2" />
+        <circle fill="#8B9B0F" cx="0" cy="16" r="2" />
+      </g>
+
+      <radialGradient cx="60%" cy="80%" r="120%" fx="30%" fy="0%" id="Shadow" gradientUnits="userSpaceOnUse">
+        <stop offset="30%" stop-opacity="0" />
+        <stop offset="100%" stop-opacity=".5" />
+      </radialGradient>
+      <pattern id="BackgroundTile" x="50%" y="50%" width="60" height="60" patternUnits="userSpaceOnUse" stroke-width="4" fill="none">
+        <path fill="#efefef" d="M0 0h60v60H0z" />
+        <path stroke="#d9d9d9" d="M0 60h60V0" />
+        <path stroke="#fff" d="M0 60V0h60" />
+      </pattern>
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#BackgroundTile)" />
+    <rect width="100%" height="100%" fill="url(#Shadow)" />
+    
+    <g class="splatters"></g>
+    <g class="enemies"></g>
+  </svg>
+
+  <!-- ================= RAKET PEMUKUL ================= -->
+  <div class="swatter-container">
+    <svg class="swatter" overflow="visible" opacity="1">
+      <path fill="none" stroke="#645CA8" stroke-width="4" d="M0 32v45" />
+      <path fill="none" stroke="#4D99D3" stroke-width="2" d="M-20-30v60m10-60v60M0-30v60m0-60v60m10-60v60m10-60v60m-50-50h60m-60 10h60M-30 0h60m-60 0h60m-60 10h60m-60 10h60" />
+      <path fill="none" stroke="#645CA8" stroke-width="4" d="M30 20v-50h-60v50c0 5.5 4.5 10 10 10h40c5.5 0 10-4.5 10-10z" />
+      <path fill="#4699D4" stroke="#645CA8" stroke-width="2" d="M0 36c-2.8 0-5-2.2-5-5H5c0 2.8-2.2 5-5 5z" />
+      <path fill="#FFF" d="M22.6 101.6c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8 0-10-14-10-14 0 0 1 .1 1.8.2 2.6-4.8 2.3-7.5 7.5-7.5 14.2 0 4 4.3 6 7 4.2-1.1 2.5-2.1 5.4-1.5 10.1 1.3 9.2 8.5 13.8 8.5 13.8-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4s6.2-2.9 9.3-5.2c4.3-3.3 1.9-9.2-2-11z" />
+      <path fill="#BFBFBF" d="M26.7 106.4c.6 2.1.1 4.4-2 6-3.1 2.3-4.7 1.8-9.3 5.2s-4.6 5.1-7.7 7.4c-6.1 4.6-13.8-5.7-7.6-10.3.8 5.4 2.1 5.6 5.2 6 3.1.4 6.9-6.9 12.9-8.8 6-1.7 8.5-5.5 8.5-5.5zm-22.6 6C-5.9 101 2.9 91.5-.7 80.7c-1.8-5.2-3.4-14.1.8-18.2C-3.4 62.5-7 65-7 70s2 6.2 2 13-5 8.8-3.8 18 8.5 13.8 8.5 13.8c1.7-1.3 2.9-1.7 4.4-2.4zM-7 90.9c.4-.9.8-1.7 1.1-2.6-4.6-.4-5.3-5.6-3.8-13.7-2.9 2.7-4.4 7-4.4 12 .1 4.1 4.4 6.1 7.1 4.3z" />
+      <path fill="none" stroke="#818181" stroke-width="2" stroke-linecap="round" d="M.1 114.8s-7.2-4.5-8.5-13.8 3.8-11.2 3.8-18-2-8-2-13c0-10 14-10 14 0 0 4.1-1 8.2-1 13s4.2 8 4.2 8m-6.2 21.4c-1.5.7-2.7 1.1-4.3 2.3-6.1 4.6 1.5 14.8 7.6 10.3 3.1-2.3 3.1-4 7.7-7.4 4.6-3.4 6.2-2.9 9.3-5.2 6.1-4.6-1.5-14.8-7.6-10.3-1.6 1.2-2.4 2.3-3.5 3.5m9-4c2.4-12-2.5-22.3-5-25.8-2.6-3.5-5.8-6.1-10.3-5.8m-13.8 2.5C-11.3 74.8-14 80-14 86.7c0 4 4.3 6 7 4.2" />
+    </svg>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
+
+  <script>
+    gsap.registerPlugin(MotionPathPlugin);
+
+    // ==========================================
+    // SETUP AUDIO & WEB AUDIO API
+    // ==========================================
+    const bgMusic = new Audio('https://upload.wikimedia.org/wikipedia/commons/b/b5/Flight_of_the_Bumblebee.ogg');
+    bgMusic.loop = true; bgMusic.volume = 0.2;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const sounds = {
+      miss: () => { 
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const bufferSize = audioCtx.sampleRate * 0.2; 
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(300, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.1);
+        filter.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.2);
+        const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(1.5, audioCtx.currentTime + 0.1); 
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); noise.start();
+      },
+      hitSplat: () => { 
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const bufferSize = audioCtx.sampleRate * 0.1; 
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 1000;
+        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); noise.start();
+      },
+      fall: () => { 
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+        osc.start(); osc.stop(audioCtx.currentTime + 1);
+      },
+      correct: () => {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+      },
+      wrong: () => {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+      }
+    };
+
+    function playSound(soundSource) {
+      if (!soundSource) return;
+      if (typeof soundSource === 'function') soundSource(); 
+      else { soundSource.currentTime = 0; soundSource.play().catch(() => {}); }
+    }
+
+    // ==========================================
+    // VARIABEL SISTEM & STATE GAME
+    // ==========================================
+    let isPlaying = false;
+    let gnats = [];
+    const swatThreshold = 60; 
+    
+    let swatCount = 0;
+    let gameTime = 0;
+    let mainTimerInterval;
+    
+    let gameMode = 'edu';
+    let selectedTables = [];
+    let mathQuestionsAsked = 0;
+    const MAX_MATH_QUESTIONS = 5;
+    let mathTimerInterval;
+    let mathTimeRemaining = 0;
+    let currentCorrectAnswer = 0;
+
+    const uiStart = document.getElementById('start-screen');
+    const uiMath = document.getElementById('math-screen');
+    const uiGameOver = document.getElementById('game-over-screen');
+    const uiHud = document.getElementById('game-hud');
+    const swatterContainer = document.querySelector('.swatter-container');
+    const scoreText = document.getElementById('score-text');
+    const timeText = document.getElementById('time-text');
+    const timeBadge = document.getElementById('time-badge-container');
+    
+    // ==========================================
+    // LOGIKA START SCREEN & MENU
+    // ==========================================
+    const grid = document.querySelector('.checkbox-grid');
+    for(let i=2; i<=9; i++) {
+      grid.innerHTML += `
+        <label class="checkbox-btn">
+          <input type="checkbox" value="${i}" class="table-cb" ${i<=3 ? 'checked' : ''}>
+          <span class="checkmark">${i}</span>
+        </label>
+      `;
+    }
+
+    document.getElementById('mode-select').addEventListener('change', (e) => {
+      document.getElementById('perkalian-group').style.display = (e.target.value === 'arcade') ? 'none' : 'block';
+    });
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      uiGameOver.classList.add('hidden');
+      uiStart.classList.remove('hidden');
+    });
+
+    function startGame() {
+      gameMode = document.getElementById('mode-select').value;
+      gameTime = parseInt(document.getElementById('time-select').value);
+      
+      if (gameMode === 'edu') {
+        const checkboxes = document.querySelectorAll('.table-cb:checked');
+        selectedTables = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        if (selectedTables.length === 0) {
+          alert("Pilih minimal satu angka perkalian!"); return;
+        }
+      }
+
+      swatCount = 0;
+      mathQuestionsAsked = 0;
+      scoreText.innerText = swatCount;
+      timeText.innerText = gameTime;
+      timeBadge.style.background = '#FF4757'; // Reset warna merah normal
+      
+      gnats.forEach(g => removeGnat(g));
+      gnats = [];
+
+      uiStart.classList.add('hidden');
+      uiHud.classList.remove('hidden');
+      document.body.classList.add('playing');
+      gsap.set(swatterContainer, { visibility: 'visible' });
+
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      bgMusic.play().catch(() => {});
+      
+      isPlaying = true;
+      emitGnats();
+      
+      mainTimerInterval = setInterval(updateMainTimer, 1000);
+    }
+
+    // ==========================================
+    // LOGIKA TIMER UTAMA
+    // ==========================================
+    function updateMainTimer() {
+      if (!isPlaying) return; 
+      
+      gameTime--;
+      timeText.innerText = gameTime;
+
+      // Efek visual jika waktu kurang dari 5 detik
+      if(gameTime <= 5 && gameTime > 0) {
+        timeBadge.style.background = (gameTime % 2 === 0) ? '#ff9f43' : '#FF4757'; // Berkedip
+      }
+
+      if (gameTime <= 0) {
+        clearInterval(mainTimerInterval);
+        
+        if (gameMode === 'edu' && mathQuestionsAsked < MAX_MATH_QUESTIONS) {
+          triggerMathQuestion(); 
+        } else {
+          triggerGameOver(gameMode === 'edu' ? "Hebat! Kamu telah menyelesaikan semua soal." : "Waktu Habis!"); 
+        }
+      }
+    }
+
+    function triggerGameOver(message) {
+      isPlaying = false;
+      clearInterval(mainTimerInterval);
+      clearInterval(mathTimerInterval);
+      bgMusic.pause();
+      
+      document.body.classList.remove('playing');
+      gsap.set(swatterContainer, { visibility: 'hidden' });
+      uiHud.classList.add('hidden');
+      uiMath.classList.add('hidden');
+      
+      document.getElementById('final-score').innerText = swatCount;
+      document.getElementById('game-over-msg').innerText = message;
+      uiGameOver.classList.remove('hidden');
+    }
+
+    // ==========================================
+    // LOGIKA SOAL MATEMATIKA (PAUSE & RESUME)
+    // ==========================================
+    function triggerMathQuestion() {
+      isPlaying = false; 
+      gsap.globalTimeline.pause(); 
+      gsap.set(swatterContainer, { visibility: 'hidden' });
+      document.body.classList.remove('playing');
+
+      mathQuestionsAsked++;
+
+      const table = selectedTables[Math.floor(Math.random() * selectedTables.length)];
+      const multiplier = Math.floor(Math.random() * 9) + 2; 
+      currentCorrectAnswer = table * multiplier;
+
+      let options = [currentCorrectAnswer];
+      while(options.length < 3) {
+        let wrong = currentCorrectAnswer + (Math.floor(Math.random() * 10) - 4);
+        if (wrong !== currentCorrectAnswer && wrong > 0 && !options.includes(wrong)) {
+          options.push(wrong);
+        }
+      }
+      options.sort(() => Math.random() - 0.5); 
+
+      document.getElementById('math-question').innerText = `${table} x ${multiplier} = ?`;
+      for(let i=0; i<3; i++) {
+        const btn = document.getElementById(`btn-opt-${i}`);
+        btn.innerText = options[i];
+        btn.onclick = () => handleMathAnswer(options[i]);
+      }
+
+      uiMath.classList.remove('hidden');
+      mathTimeRemaining = 7;
+      
+      const fill = document.getElementById('math-timer-fill');
+      fill.style.transition = 'none'; fill.style.width = '100%';
+      setTimeout(() => { fill.style.transition = 'width 7s linear'; fill.style.width = '0%'; }, 50);
+
+      mathTimerInterval = setInterval(() => {
+        mathTimeRemaining--;
+        if(mathTimeRemaining <= 0) {
+          clearInterval(mathTimerInterval);
+          playSound(sounds.wrong);
+          triggerGameOver("Terlalu Lambat! Kamu kehabisan waktu.");
+        }
+      }, 1000);
+    }
+
+    function handleMathAnswer(selected) {
+      clearInterval(mathTimerInterval);
+      uiMath.classList.add('hidden');
+
+      if (selected === currentCorrectAnswer) {
+        playSound(sounds.correct);
+        gameTime += 10; 
+        timeText.innerText = gameTime;
+        timeBadge.style.background = '#2ED573'; // Warna hijau saat dapat bonus waktu
+        setTimeout(() => { timeBadge.style.background = '#FF4757'; }, 1000);
+        
+        document.body.classList.add('playing');
+        gsap.set(swatterContainer, { visibility: 'visible' });
+        gsap.globalTimeline.play(); 
+        isPlaying = true;
+        
+        mainTimerInterval = setInterval(updateMainTimer, 1000);
+      } else {
+        playSound(sounds.wrong);
+        triggerGameOver(`Salah! Jawaban yang benar adalah ${currentCorrectAnswer}.`);
+      }
+    }
+
+    // ==========================================
+    // MEKANIK KONTROL PEMAIN & MUSUH
+    // ==========================================
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('mousedown', swat);
+    window.addEventListener('touchstart', swat, { passive: false });
+
+    function getPointer(e) {
+      if (e.touches && e.touches.length > 0) return e.touches[0];
+      if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0];
+      return e;
+    }
+
+    function onMove(e) {
+      if (!isPlaying) return;
+      if (e.cancelable) e.preventDefault();
+      const point = getPointer(e);
+      gsap.to(swatterContainer, { duration: 0.05, x: point.pageX, y: point.pageY, ease: "power1.out" });
+    }
+
+    function swat(e) {
+      if (!isPlaying) return;
+      if (e.cancelable) e.preventDefault();
+      const point = getPointer(e);
+      gsap.to('.swatter', { duration: 0.05, rotationX: -55, transformOrigin: '0% 110%', yoyo: true, repeat: 1, ease: "power2.out" });
+      const isHitSuccess = checkPoint(point.clientX, point.clientY);
+      if (isHitSuccess) playSound(sounds.hitSplat);
+      else playSound(sounds.miss);
+    }
+
+    const splattersContainer = document.querySelector('.splatters');
+    const splatterTemplate = document.getElementById('splatter-template');
+    function createSplatter(x, y) {
+      const splatter = splatterTemplate.cloneNode(true);
+      splatter.removeAttribute('id'); splattersContainer.appendChild(splatter);
+      gsap.set(splatter, { x: x, y: y, scale: Math.random()*0.5+0.8, rotation: Math.random()*360, transformOrigin: "50% 50%" });
+      gsap.to(splatter, { duration: 2.5, delay: 1.5, autoAlpha: 0, onComplete: () => {
+        if (splatter.parentNode === splattersContainer) splattersContainer.removeChild(splatter);
+      }});
+    }
+
+    const gnatTemplate = document.querySelector('.gnat');
+    const enemies = document.querySelector('.enemies');
+    function getPath() {
+      const initX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
+      const initY = Math.random() < 0.5 ? -50 : window.innerHeight + 50;
+      let points = [{ x: initX, y: initY }];
+      for (let i = 0; i < 8; i++) {
+        let angle = Math.random() * Math.PI * 2;
+        points.push({ x: (Math.cos(angle) * window.innerWidth * 0.4) + window.innerWidth * 0.5, y: (Math.sin(angle) * window.innerHeight * 0.4) + window.innerHeight * 0.5 });
+      }
+      points.push({ x: Math.random() < 0.5 ? -50 : window.innerWidth + 50, y: Math.random() < 0.5 ? -50 : window.innerHeight + 50 });
+      return points;
+    }
+
+    function buzz(gnatObject) {
+      if (gnatObject && gnatObject.alive) {
+        const flap = Math.random();
+        gsap.set(gnatObject.element.querySelector('.wing1'), { autoAlpha: flap > 0.5 ? 0 : 1 });
+        gsap.set(gnatObject.element.querySelector('.wing2'), { autoAlpha: flap > 0.5 ? 1 : 0 });
+        gsap.set(gnatObject.element, { x: gnatObject.x, y: gnatObject.y });
+      }
+    }
+
+    function createGnats(numGnats) {
+      const path = getPath();
+      for (let i = 0; i < numGnats; i++) {
+        const gnatEl = gnatTemplate.cloneNode(true); enemies.appendChild(gnatEl);
+        const gnatObject = { element: gnatEl, x: path[0].x, y: path[0].y, alive: true };
+        gnats.push(gnatObject);
+        gsap.set(gnatEl, { x: path[0].x, y: path[0].y, transformOrigin: '50% 50%' });
+        gsap.to(gnatObject, {
+          duration: 7, delay: i * 0.2, motionPath: { path: path, curviness: 1.5 },
+          ease: "none", onUpdate: buzz, onUpdateParams: [gnatObject],
+          onComplete: removeGnat, onCompleteParams: [gnatObject]
+        });
+      }
+    }
+
+    function removeGnat(gnatObject) {
+      if (gnatObject && gnatObject.element) {
+        gsap.killTweensOf(gnatObject); gsap.killTweensOf(gnatObject.element);
+        if (gnatObject.element.parentNode === enemies) enemies.removeChild(gnatObject.element);
+      }
+      gnats = gnats.filter(g => g !== gnatObject);
+    }
+
+    function emitGnats() {
+      if (uiGameOver.classList.contains('hidden') && isPlaying) {
+        createGnats(Math.floor(Math.random() * 2) + 3);
+      }
+      gsap.delayedCall(Math.random() + 2, emitGnats);
+    }
+
+    function checkPoint(x, y) {
+      let hitSomething = false; 
+      for (let i = 0; i < gnats.length; i++) {
+        const gnatObject = gnats[i];
+        if (gnatObject && gnatObject.alive) {
+          if (Math.abs(gnatObject.x - x) < swatThreshold && Math.abs(gnatObject.y - y) < swatThreshold) {
+            hitSomething = true; gnatObject.alive = false; swatCount++; scoreText.innerText = swatCount;
+            gsap.killTweensOf(gnatObject); createSplatter(gnatObject.x, gnatObject.y);
+            gsap.to(gnatObject.element, {
+              duration: 1, y: '+=1000', rotation: Math.random() < 0.5 ? -1000 : 1000,
+              transformOrigin: '50% 50%', autoAlpha: 0, ease: "power1.in",
+              onComplete: () => { playSound(sounds.fall); removeGnat(gnatObject); }
+            });
+          }
+        }
+      }
+      return hitSomething; 
+    }
+  </script>
+</body>
+</html>
